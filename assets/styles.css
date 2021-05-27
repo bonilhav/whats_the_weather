@@ -1,0 +1,16 @@
+*{
+    background-size: 100%;
+    margin: 10px;
+    box-sizing: border-box;
+    font-family: 'Itim', cursive, sans-serif;
+
+}
+
+header {
+    font-size: 40px;
+    text-align: center;
+}
+
+#search {
+    margin: 10px 0;
+}
