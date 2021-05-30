@@ -4,14 +4,30 @@ const forecast1 = $('.futureWeather1');
 const forecast2 = $('.futureWeather2');
 const forecast3 = $('.futureWeather3');
 const forecast4 = $('.futureWeather4');
+const forecastBox = $('.forecast');
+let cities;
+const searchHistory = $('#searchHistory');
 
 
 $("#search").click(function () {
     event.preventDefault();
     let city = $('#search-city').val();
     getCurrentWeather(city);
-    /*  getFutureWeather(lat,lon); */
+    forecastBox.removeClass("hidden")
 });
+
+searchHistory.click(function() {
+    let city = event.target.value;
+    getCurrentWeather(city);
+    forecastBox.removeClass("hidden")
+})
+
+if (localStorage.getItem("localWeatherSearch")) {
+    cities = JSON.parse(localStorage.getItem("localWeatherSearch"));
+    writeHistory(cities);
+} else {
+    cities = [];
+};
 
 function getCurrentWeather(city) {
     let cityUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=7c86f0d48713fa92ff0fb20c045e6202`;
@@ -25,12 +41,13 @@ function getCurrentWeather(city) {
             let icon = data.weather[0].icon
 
             current.html(`
-        <h2>${data.name} ${today} <img src="http://openweathermap.org/img/wn/${icon}@2x.png"/></h2> 
+        <h2>${data.name} <img id="currentIcon" src="http://openweathermap.org/img/wn/${icon}@2x.png"/> ${today}</h2> 
         <p>Temperature: ${data.main.temp}&#176;F</p>
         <p>Humidity: ${data.main.humidity}%</p>
         <p>Wind Speed: ${data.wind.speed} mph</p>
         `, returnUVI(data.coord.lat, data.coord.lon))
-        /* createHistory(response.name) */;
+        createHistory(data.name);
+
             let lat = data.coord.lat;
             console.log(lat)
             let lon = data.coord.lon;
@@ -44,11 +61,23 @@ function returnUVI(lat, lon) {
 
     $.get(uviUrl)
         .then(function (data) {
-            console.log(data.daily)
 
-            current.append(
-                `<p>UVI: ${data.current.uvi} </p>`)
-            console.log(data.current.uvi)
+            uviIndex = data.current.uvi
+            console.log(uviIndex)
+
+            if (uviIndex >= 11) {
+                uviRating = "purple"
+            } else if (uviIndex > 7) {
+                uviRating = "red"
+            } else if (uviIndex > 5) {
+                uviRating = "orange"
+            } else if (uviIndex > 2) {
+                uviRating = "yellow"
+            } else if (uviIndex <= 2) {
+                uviRating = "green"
+            };
+            current.append(`<p class="${uviRating}">UV Index: ${data.current.uvi} </p>`)
+            
         })
 };
 
@@ -103,12 +132,29 @@ function getFutureWeather(lat, lon) {
         });
 };
 
-/* const citiesFromLocalStorage = JSON.parse(window.localStorage.getItem("cityHistory")) || [];
+function createHistory(city) {
+    var citySearch = city.trim();
+    var buttonCheck = $(`searchHistory > BUTTON[value='${citySearch}']`);
+    if (buttonCheck.length == 1) {
+        return;
+    }
+    
+    if (cities.includes(city)){
+        cities.push(city);
+        localStorage.setItem("localWeatherSearch", JSON.stringify(cities));
+    }
 
+    searchHistory.prepend(`
+    <a class="panel-block">
+        <button class="button is-info is-rounded" value='${city}'>${city}</button>
+    </a>`);
+}
 
-
-function createHistory (){
-
-}; */
+function writeHistory (array){
+    $.each(array, function(i) {
+        createHistory(array[i]);
+        console.log(array)
+    })
+};
 
 
