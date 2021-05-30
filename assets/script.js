@@ -5,15 +5,16 @@ const forecast2 = $('.futureWeather2');
 const forecast3 = $('.futureWeather3');
 const forecast4 = $('.futureWeather4');
 const forecastBox = $('.forecast');
-let cities;
 const searchHistory = $('#searchHistory');
+let cities;
 
 
 $("#search").click(function () {
     event.preventDefault();
     let city = $('#search-city').val();
     getCurrentWeather(city);
-    forecastBox.removeClass("hidden")
+    forecastBox.removeClass("hidden");
+    $('#search-city').val("")
 });
 
 searchHistory.click(function() {
@@ -24,7 +25,6 @@ searchHistory.click(function() {
 
 if (localStorage.getItem("localWeatherSearch")) {
     cities = JSON.parse(localStorage.getItem("localWeatherSearch"));
-    writeHistory(cities);
 } else {
     cities = [];
 };
@@ -95,35 +95,35 @@ function getFutureWeather(lat, lon) {
 
             forecast.html(`
                 <h3>${moment(data.daily[1].dt, "X").format("MM/DD/YYYY")}</h3> 
-                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[1].weather[0].icon}@2x.png"/>
+                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[1].weather[0].icon}@2x.png" alt=${data.daily[1].weather[0].icon}/>
                 <p>Temperature: ${data.daily[1].temp.day}&#176;F</p>
                 <p>Humidity: ${data.daily[1].humidity}%</p>
                 <p>Wind Speed: ${data.daily[1].wind_speed} mph</p>`)
 
             forecast1.html(`
                 <h3>${moment(data.daily[2].dt, "X").format("MM/DD/YYYY")}</h3> 
-                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[2].weather[0].icon}@2x.png"/>
+                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[2].weather[0].icon}@2x.png" alt=${data.daily[1].weather[0].icon}/>
                 <p>Temperature: ${data.daily[2].temp.day}&#176;F</p>
                 <p>Humidity: ${data.daily[2].humidity}%</p>
                 <p>Wind Speed: ${data.daily[2].wind_speed} mph</p>`)
 
             forecast2.html(`
                 <h3>${moment(data.daily[3].dt, "X").format("MM/DD/YYYY")}</h3> 
-                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[3].weather[0].icon}@2x.png"/>
+                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[3].weather[0].icon}@2x.png" alt=${data.daily[1].weather[0].icon}/>
                 <p>Temperature: ${data.daily[3].temp.day}&#176;F</p>
                 <p>Humidity: ${data.daily[3].humidity}%</p>
                 <p>Wind Speed: ${data.daily[3].wind_speed} mph</p>`)
             
             forecast3.html(`
                 <h3>${moment(data.daily[4].dt, "X").format("MM/DD/YYYY")}</h3> 
-                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[4].weather[0].icon}@2x.png"/>
+                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[4].weather[0].icon}@2x.png" alt=${data.daily[1].weather[0].icon}/>
                 <p>Temperature: ${data.daily[4].temp.day}&#176;F</p>
                 <p>Humidity: ${data.daily[4].humidity}%</p>
                 <p>Wind Speed: ${data.daily[4].wind_speed} mph</p>`)
 
             forecast4.html(`
                 <h3>${moment(data.daily[5].dt, "X").format("MM/DD/YYYY")}</h3> 
-                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[5].weather[0].icon}@2x.png"/>
+                <img class="futureIcon" src="http://openweathermap.org/img/wn/${data.daily[5].weather[0].icon}@2x.png" alt=${data.daily[1].weather[0].icon}/>
                 <p>Temperature: ${data.daily[5].temp.day}&#176;F</p>
                 <p>Humidity: ${data.daily[5].humidity}%</p>
                 <p>Wind Speed: ${data.daily[5].wind_speed} mph</p>`)
@@ -139,7 +139,7 @@ function createHistory(city) {
         return;
     }
     
-    if (cities.includes(city)){
+    if (!cities.includes(city)){
         cities.push(city);
         localStorage.setItem("localWeatherSearch", JSON.stringify(cities));
     }
@@ -149,12 +149,3 @@ function createHistory(city) {
         <button class="button is-info is-rounded" value='${city}'>${city}</button>
     </a>`);
 }
-
-function writeHistory (array){
-    $.each(array, function(i) {
-        createHistory(array[i]);
-        console.log(array)
-    })
-};
-
-
