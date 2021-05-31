@@ -8,11 +8,21 @@ const forecastBox = $('.forecast');
 const searchHistory = $('#searchHistory');
 let cities;
 
+if (localStorage.getItem("localWeatherSearch")) {
+    cities = JSON.parse(localStorage.getItem("localWeatherSearch"));
+    for (let c = 0; c < cities.length; c++) {
+        searchHistory.prepend(`<a class="panel-block"> <button class="button is-info is-rounded" value='${cities[c]}'>${cities[c]}</button> </a>`);
+    }
+} else {
+    cities = [];
+};
 
 $("#search").click(function () {
     event.preventDefault();
     let city = $('#search-city').val();
-    getCurrentWeather(city);
+    if (city != "") {
+        getCurrentWeather(city);
+    }
     forecastBox.removeClass("hidden");
     $('#search-city').val("")
 });
@@ -22,12 +32,6 @@ searchHistory.click(function() {
     getCurrentWeather(city);
     forecastBox.removeClass("hidden")
 })
-
-if (localStorage.getItem("localWeatherSearch")) {
-    cities = JSON.parse(localStorage.getItem("localWeatherSearch"));
-} else {
-    cities = [];
-};
 
 function getCurrentWeather(city) {
     let cityUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=7c86f0d48713fa92ff0fb20c045e6202`;
@@ -139,13 +143,9 @@ function createHistory(city) {
         return;
     }
     
-    if (!cities.includes(city)){
-        cities.push(city);
+    if (!cities.includes(citySearch)){
+        searchHistory.prepend(`<a class="panel-block"> <button class="button is-info is-rounded" value='${citySearch}'>${citySearch}</button> </a>`);
+        cities.push(citySearch);
         localStorage.setItem("localWeatherSearch", JSON.stringify(cities));
     }
-
-    searchHistory.prepend(`
-    <a class="panel-block">
-        <button class="button is-info is-rounded" value='${city}'>${city}</button>
-    </a>`);
-}
+};
